@@ -13,7 +13,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import objects.Recipe;
 
-public final class Database {
+public class Database {
 	private static ObjectInputStream oif;
     private static ObjectOutputStream oof;
 	private static FileOutputStream fos;
@@ -22,6 +22,10 @@ public final class Database {
 	ArrayList<File> files;
 	
 	public Database() {
+		populateArrayLists();
+	}
+
+	private void populateArrayLists(){
 		files = lsReader();
 		recipes = new ArrayList<>();
 		for (File i : files) {
@@ -32,7 +36,6 @@ public final class Database {
 			}
 		}
 	}
-        @SuppressWarnings("UseSpecificCatch")
 	public  boolean writeRecipe(Recipe recipe) throws NameAlreadyInUse, EmptyObject{
 		if (recipe == null) {
 			throw new EmptyObject();
@@ -50,7 +53,7 @@ public final class Database {
 			oof.close();
 			fos.close();
 			return true;
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return false;
