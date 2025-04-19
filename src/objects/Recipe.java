@@ -75,4 +75,23 @@ public class Recipe implements Serializable {
         return totalTime;
     }
 
+	
+    @Override
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		sb.append("Recipe Name: ").append(name).append("\n");
+		sb.append("Description: ").append(description).append("\n");
+		sb.append("Ingredients: \n");
+		for (Ingredient ingredient : ingredients) {
+			sb.append(ingredient.toString()).append("\n");
+		}
+		sb.append("Instructions: \n");
+		for (String instruction : instructions) {
+			sb.append(instruction).append("\n");
+		}
+		sb.append("Prep Time: ").append(prepTime).append(" minutes\n");
+		sb.append("Cook Time: ").append(cookTime).append(" minutes\n");
+		sb.append("Total Time: ").append(totalTime).append(" minutes\n");
+		return sb.toString();
+	}
 }

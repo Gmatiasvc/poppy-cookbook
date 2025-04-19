@@ -9,4 +9,4 @@ build.xml
 manifest.mf
 /build/
 *.jar
-.dat
+*.dat
