@@ -13,7 +13,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import objects.Recipe;
 
-public class Database {
+public final class Database {
 	private static ObjectInputStream oif;
     private static ObjectOutputStream oof;
 	private static FileOutputStream fos;
@@ -23,6 +23,14 @@ public class Database {
 	
 	public Database() {
 		files = lsReader();
+		recipes = new ArrayList<>();
+		for (File i : files) {
+			try {
+				recipes.add(readRecipe(i));
+			} catch (BadFileType | CorruptedFile e) {
+				e.printStackTrace();
+			}
+		}
 	}
         @SuppressWarnings("UseSpecificCatch")
 	public  boolean writeRecipe(Recipe recipe) throws NameAlreadyInUse, EmptyObject{
@@ -92,9 +100,7 @@ public class Database {
 		Recipe r = new Recipe("test2", "test", new ArrayList<>(), new ArrayList<>(), 15, 20);
 		try {
 			db.writeRecipe(r);
-		} catch (NameAlreadyInUse e) {
-			e.printStackTrace();
-		} catch (EmptyObject e) {
+		} catch (NameAlreadyInUse | EmptyObject e) {
 			e.printStackTrace();
 		}
 		
@@ -102,9 +108,7 @@ public class Database {
 		
 		try {
 			System.out.println(db.readRecipe(new File("db/test2.dat")).toString());
-		} catch (BadFileType e) {
-			e.printStackTrace();
-		} catch (CorruptedFile e) {
+		} catch (BadFileType | CorruptedFile e) {
 			e.printStackTrace();
 		}		
 	}
