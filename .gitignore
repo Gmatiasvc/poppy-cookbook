@@ -1,10 +1,12 @@
 .vscode
 logs
 bin
-db
+
 .LCK*
 *.form
 nbproject
 build.xml
 manifest.mf
 /build/
+*.jar
+.dat
