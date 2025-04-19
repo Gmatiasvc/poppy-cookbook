@@ -79,8 +79,21 @@ public class Database {
 		}
 	} 
 
-	public boolean  deleteRecipe(File file){
-		return true;
+	public boolean deleteRecipe(String name){
+		boolean toRepopulate = false;
+		for (File i : files) {
+			if (i.getName().equals(name + ".dat")) {
+				System.out.println("Deleting " + i.getName());
+				i.delete();
+				toRepopulate = true;
+			}
+		}
+		if (toRepopulate) {
+			populateArrayLists();
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public final ArrayList<File> lsReader() {
@@ -93,26 +106,5 @@ public class Database {
 			} 
 		}
 		return list;
-	}
-
-	public static void main(String[] args) {
-	Database db = new Database();
-		for (File i : db.lsReader()) {
-			System.out.println(i.getName());
-		}
-		Recipe r = new Recipe("test2", "test", new ArrayList<>(), new ArrayList<>(), 15, 20);
-		try {
-			db.writeRecipe(r);
-		} catch (NameAlreadyInUse | EmptyObject e) {
-			e.printStackTrace();
-		}
-		
-		
-		
-		try {
-			System.out.println(db.readRecipe(new File("db/test2.dat")).toString());
-		} catch (BadFileType | CorruptedFile e) {
-			e.printStackTrace();
-		}		
 	}
 }
