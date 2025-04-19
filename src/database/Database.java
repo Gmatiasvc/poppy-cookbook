@@ -7,6 +7,7 @@ import exceptions.NameAlreadyInUse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -51,18 +52,24 @@ public class Database {
 		if (file.getName().endsWith(".dat")) {
 			try {
 				oif = new ObjectInputStream(new FileInputStream(file));
-				
-			} catch (Exception e) {
+				return (Recipe) oif.readObject();
+			} catch (IOException | ClassNotFoundException e) {
+				e.printStackTrace();
+				throw new CorruptedFile();
+			} finally {
+				try {
+					oif.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-			return null;
 		} else {
 			throw new BadFileType();
 		}
 	} 
 
-	public Recipe deleteRecipe(File file){
-		// TODO Auto-generated method stub
-		return null;
+	public boolean  deleteRecipe(File file){
+		return true;
 	}
 
 	public final ArrayList<File> lsReader() {
@@ -82,7 +89,7 @@ public class Database {
 		for (File i : db.lsReader()) {
 			System.out.println(i.getName());
 		}
-		Recipe r = new Recipe("test", "test", new ArrayList<>(), new ArrayList<>(), 0, 0);
+		Recipe r = new Recipe("test2", "test", new ArrayList<>(), new ArrayList<>(), 15, 20);
 		try {
 			db.writeRecipe(r);
 		} catch (NameAlreadyInUse e) {
@@ -94,7 +101,7 @@ public class Database {
 		
 		
 		try {
-			System.out.println(db.readRecipe(new File("db/test.dat")).toString());
+			System.out.println(db.readRecipe(new File("db/test2.dat")).toString());
 		} catch (BadFileType e) {
 			e.printStackTrace();
 		} catch (CorruptedFile e) {
