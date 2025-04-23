@@ -20,6 +20,7 @@ public class Database {
 
 	private ArrayList<Recipe> recipes;
 	private ArrayList<File> files;
+	private ArrayList<String[]> ingredients;
 	
 	public Database() {
 		populateArrayLists();
@@ -142,6 +143,24 @@ public class Database {
 			} 
 		}
 		return list;
+	}
+
+
+	public String buildString(String name, String type, String unit){
+		String str;
+		str = name + "ƒ" + type + "ƒ" + unit;
+		return str;
+	}
+
+
+	public String[] parseString(String str){
+		String[] parts = str.split("ƒ");
+		return parts;
+	}
+
+
+	public ArrayList<String[]> getIngredients() {
+		return ingredients;
 	}
 
 	// DOC: Este método se encarga de obtener la lista de recetas.
