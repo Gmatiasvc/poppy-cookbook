@@ -13,22 +13,27 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import objects.DataMap;
 import objects.Recipe;
 
-public class Database {
+public final class Database {
 
     private static ObjectInputStream oif;
     private static ObjectOutputStream oof;
     private static FileOutputStream fos;
-
     private static RandomAccessFile raf;
 
     private ArrayList<Recipe> recipes;
     private ArrayList<File> files;
-    private ArrayList<String[]> ingredients;
+    private ArrayList<String> ingredients;
+    private DataMap dataMap;
 
     public Database() {
+		dataMap = loadDataMap();
         populateArrayLists();
+		if (dataMap == null) {
+			dataMap = new DataMap("datamap");
+		}
     }
 
     // DOC: Este método se encarga de popular la lista de recetas "recipes" y la lista de archivos "files" a partir de los archivos en el directorio "db/".
@@ -37,6 +42,7 @@ public class Database {
     private void populateArrayLists() {
         files = lsReader();
         recipes = new ArrayList<>();
+		
         for (File i : files) {
             try {
                 recipes.add(readRecipe(i));
@@ -44,6 +50,13 @@ public class Database {
                 e.printStackTrace();
             }
         }
+
+		if (ingredients == null) {
+			ingredients = new ArrayList<>();
+		}
+		for (String i : dataMap.getData()) {
+			ingredients.add(i);
+		}
     }
 
     // DOC: Este método se encarga de escribir una clase tipo "Recipe" en un archivo .dat
@@ -150,6 +163,38 @@ public class Database {
         return list;
     }
 
+    public boolean saveDataMap() {
+        try {
+            fos = new FileOutputStream("db/datamap.db");
+            oof = new ObjectOutputStream(fos);
+            oof.writeObject(dataMap);
+            oof.close();
+            fos.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+	public DataMap loadDataMap() {
+		try {
+			File file = new File("db/datamap.db");
+			if (file.exists()) {
+				oif = new ObjectInputStream(new FileInputStream(file));
+				dataMap = (DataMap) oif.readObject();
+				oif.close();
+				return dataMap;
+			} else {
+				dataMap = new DataMap("datamap");
+				return dataMap;
+			}
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
     public String buildString(String name, String type, String unit) {
         String str;
         str = name + "ƒ" + type + "ƒ" + unit + "\n";
@@ -177,6 +222,9 @@ public class Database {
             raf = new RandomAccessFile("db/ingredients.db", "rw");
             raf.seek(raf.length());
             raf.writeUTF(parsedString);
+            dataMap.addData(name, parsedString.getBytes().length);
+			ingredients.add(parseString(parsedString)[0]);
+			saveDataMap();
             return true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -191,12 +239,13 @@ public class Database {
             throw new IllegalArgumentException("Parsed string cannot be null or empty");
         }
         if (!parsedString.endsWith("\n")) {
-			parsedString += "\n";
+            parsedString += "\n";
         }
         try {
             raf = new RandomAccessFile("db/ingredients.db", "rw");
             raf.seek(raf.length());
             raf.writeUTF(parsedString);
+            dataMap.addData(parseString(parsedString)[0], parsedString.getBytes().length);
             return true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -206,7 +255,33 @@ public class Database {
         return false;
     }
 
-    public ArrayList<String[]> getIngredients() {
+	public String[] readIngredient(String name) {
+		try {
+			raf = new RandomAccessFile("db/ingredients.db", "r");
+			
+			String[] data = dataMap.searchData(name);
+
+			if (data != null) {
+				raf.skipBytes((int) (raf.getFilePointer() - Long.parseLong(data[1])));
+				String[] str = parseString(raf.readUTF());
+				ingredients.add(str[0]);
+				return str;
+			} else {
+				return null;
+			}
+			
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public boolean deleteIngredient(String name) {
+		return dataMap.removeData(name);
+	}
+
+    public ArrayList<String> getIngredients() {
         return ingredients;
     }
 
