@@ -21,6 +21,7 @@ import objects.Recipe;
  * 
  * @author Grupo C [Backend]
  */
+@SuppressWarnings("CallToPrintStackTrace")
 public final class Database {
     private static ObjectInputStream oif;
     private static ObjectOutputStream oof;
