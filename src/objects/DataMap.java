@@ -10,10 +10,10 @@ import java.util.ArrayList;
  */
 public class DataMap implements Serializable {
 
-    private String id;
-    private ArrayList<String> data;
-    private ArrayList<Integer> loc;
-    private ArrayList<Integer> size;
+    private final String id;
+    private final ArrayList<String> data;
+    private final ArrayList<Integer> loc;
+    private final ArrayList<Integer> size;
     private int byteTotalSize;
 
     /**
