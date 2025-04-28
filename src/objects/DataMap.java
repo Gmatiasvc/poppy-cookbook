@@ -80,7 +80,7 @@ public class DataMap implements Serializable {
     /**
      * Devuelve una lista con todos los identificadores de los datos
      *
-     * @return ArrayList<String> con los identificadores de los datos
+     * @return ArrayList con los identificadores de los datos
      */
     public ArrayList<String> getData() {
         return data;
